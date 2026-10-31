@@ -131,6 +131,6 @@ La aplicación corre en la computadora local; **todos los datos viven en Upstash
 
 El diseño completo, la justificación frente a SQL y el catálogo de consultas están en el documento PDF del proyecto.
 
-## Autora
 
-[Tu nombre] · Bases de Datos Avanzadas · [Grupo]
+
+Carola Mera Dragustinovis · Bases de Datos Avanzadas ·
