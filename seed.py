@@ -12,12 +12,12 @@ from datetime import date
 
 from kikis_nook.conexion import obtener_conexion
 
-
+# ---------------------------------------------------------------------------
 # 1. DATOS DE EJEMPLO
 #    id     -> identificador interno de Kiki's Nook (clave sustituta)
 #    precio -> precio en MXN de nuestra librería
 #    generos-> un libro puede estar en varios generos (Sets)
-
+# ---------------------------------------------------------------------------
 LIBROS = [
     {"id": "kn001", "titulo": "Alas de sangre (Fourth Wing)", "autor": "Rebecca Yarros",
      "anio": 2023, "precio": 499, "stock": 12, "generos": ["fantasia", "romance"]},
@@ -63,7 +63,7 @@ VENTAS_INICIALES = {
 PATRONES = [
     "libro:*", "libros:*", "genero:*", "ranking:*", "resenas:*",
     "carrito:*", "apartado:*", "oferta:*", "sorpresa:*",
-    "historial:*", "ventas:*", "saludo",
+    "historial:*", "ventas:*", "contador:*", "saludo",
 ]
 
 # Tiempos de vida (TTL) en segundos
@@ -71,9 +71,9 @@ TTL_SORPRESA = 24 * 60 * 60  # 24 horas
 TTL_OFERTA = 2 * 60 * 60     # 2 horas (oferta relámpago)
 
 
-
+# ---------------------------------------------------------------------------
 # 2. FUNCIONES DE CARGA
-
+# ---------------------------------------------------------------------------
 def limpiar(r):
     """Borra solo las claves del proyecto usando SCAN (no bloquea Redis como KEYS)."""
     borradas = 0
@@ -104,6 +104,8 @@ def cargar_libros(r):
         for genero in libro["generos"]:
             pipe.sadd(f"genero:{genero}", libro["id"])
             pipe.sadd("libros:generos", genero)  # lista de géneros existentes
+    # El contador arranca en 10 para que el siguiente libro nuevo sea kn011
+    pipe.set("contador:libros", len(LIBROS))
     pipe.execute()
     print(f"Libros: {len(LIBROS)} cargados")
 
@@ -135,7 +137,9 @@ def cargar_extras(r):
     print("Extras: sorpresa del día (24 h) y oferta relámpago (2 h) creadas")
 
 
+# ---------------------------------------------------------------------------
 # 3. PROGRAMA PRINCIPAL
+# ---------------------------------------------------------------------------
 def main():
     r = obtener_conexion()
     print("Conectando a Kiki's Nook...", "OK" if r.ping() else "FALLO")
