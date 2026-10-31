@@ -11,7 +11,7 @@ Modelo en Redis:
 from kikis_nook.conexion import obtener_conexion
 
 # Campos que se permiten editar desde la app
-CAMPOS_EDITABLES = {"titulo", "autor", "anio", "precio", "stock", "generos"}
+CAMPOS_EDITABLES = {"titulo", "autor", "anio", "precio", "stock", "generos", "sinopsis", "portada"}
 
 
 # ---------------------------------------------------------------------------
@@ -32,7 +32,7 @@ def _a_lista(generos) -> list:
 # ---------------------------------------------------------------------------
 # CREATE
 # ---------------------------------------------------------------------------
-def crear_libro(titulo, autor, anio, precio, stock, generos) -> str:
+def crear_libro(titulo, autor, anio, precio, stock, generos, sinopsis="", portada="") -> str:
     """Crea un libro nuevo y devuelve su id (ej. 'kn011')."""
     r = obtener_conexion()
     # INCR es atómico: aunque dos personas creen libros a la vez, nunca se repite el id
@@ -49,6 +49,8 @@ def crear_libro(titulo, autor, anio, precio, stock, generos) -> str:
         "precio": float(precio),
         "stock": int(stock),
         "generos": ",".join(lista_generos),
+        "sinopsis": sinopsis,
+        "portada": portada,
         "calif_suma": 0,
         "calif_total": 0,
     })

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% from "_macros.html" import tarjeta %}
+{% block titulo %}Mi rincón{% endblock %}
+{% block contenido %}
+<section class="bloque">
+  <h1>El rincón de {{ usuario }}</h1>
+
+  <h2 class="titulo-bloque">Mis apartados</h2>
+  {% if apartados %}
+    <table class="tabla">
+      <thead><tr><th>Libro</th><th>Apartado el</th><th>Expira en</th><th></th></tr></thead>
+      <tbody>
+      {% for a in apartados %}
+        <tr>
+          <td><a href="{{ url_for('ver_libro', id_libro=a.id_libro) }}">{{ a.titulo }}</a></td>
+          <td>{{ a.fecha }}</td>
+          <td class="ttl">{{ a.expira }}</td>
+          <td>
+            <form action="{{ url_for('cancelar_apartado', id_libro=a.id_libro) }}" method="post">
+              <button class="enlace">cancelar</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="muted">No tienes libros apartados.</p>
+  {% endif %}
+
+  <h2 class="titulo-bloque">Vistos recientemente</h2>
+  <div class="estante">
+    {% for libro in historial %}{{ tarjeta(libro) }}{% else %}<p class="muted">Todavía no has visto ningún libro.</p>{% endfor %}
+  </div>
+</section>
+{% endblock %}

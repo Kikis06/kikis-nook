@@ -1,0 +1,41 @@
+{# Tarjeta de libro con portada que se abre en 3D al pasar el cursor #}
+{% macro tarjeta(libro, etiqueta=None) %}
+<a class="libro" href="{{ url_for('ver_libro', id_libro=libro.id) }}">
+  <div class="libro-3d">
+    {# Lo que se ve "dentro" cuando la portada se abre #}
+    <div class="pagina">
+      <p class="pagina-sinopsis">{{ libro.sinopsis or "Una historia esperándote en nuestro rincón." }}</p>
+      <div class="pagina-pie">
+        {% if libro.calificacion %}<span class="estrellas">★ {{ libro.calificacion }}</span>{% endif %}
+        {% if libro.oferta %}
+          <span class="precio"><s>{{ libro.precio|dinero }}</s> {{ libro.oferta|dinero }}</span>
+        {% else %}
+          <span class="precio">{{ libro.precio|dinero }}</span>
+        {% endif %}
+        <span class="ver-mas">Ver libro →</span>
+      </div>
+    </div>
+    {# La portada: frente + reverso (la cara interna al abrirse) #}
+    <div class="portada">
+      <div class="frente tono-{{ libro.id|tono }}">
+        {% if libro.portada %}
+          <img src="{{ libro.portada }}" alt="Portada de {{ libro.titulo }}" loading="lazy">
+        {% else %}
+          <div class="diseno">
+            <span class="adorno">✦</span>
+            <span class="d-titulo">{{ libro.titulo }}</span>
+            <span class="linea"></span>
+            <span class="d-autor">{{ libro.autor }}</span>
+          </div>
+        {% endif %}
+      </div>
+      <div class="reverso"></div>
+    </div>
+  </div>
+  {% if etiqueta %}<span class="etiqueta">{{ etiqueta }}</span>{% endif %}
+  <div class="info">
+    <h3>{{ libro.titulo }}</h3>
+    <p>{{ libro.autor }}</p>
+  </div>
+</a>
+{% endmacro %}

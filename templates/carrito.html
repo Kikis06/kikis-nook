@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block titulo %}Carrito{% endblock %}
+{% block contenido %}
+<section class="bloque estrecho">
+  <h1>Tu carrito</h1>
+  {% if c.renglones %}
+    <p class="ttl">⏳ Tu carrito se vacía solo en <span data-segundos="{{ c.expira_en }}"></span> si no lo usas</p>
+    <table class="tabla">
+      <thead><tr><th>Libro</th><th>Cant.</th><th>Precio</th><th>Subtotal</th><th></th></tr></thead>
+      <tbody>
+      {% for x in c.renglones %}
+        <tr>
+          <td><a href="{{ url_for('ver_libro', id_libro=x.libro.id) }}">{{ x.libro.titulo }}</a></td>
+          <td>{{ x.cantidad }}</td>
+          <td>{{ x.precio|dinero }}{% if x.libro.oferta %} ⚡{% endif %}</td>
+          <td>{{ x.subtotal|dinero }}</td>
+          <td>
+            <form action="{{ url_for('quitar_carrito', id_libro=x.libro.id) }}" method="post">
+              <button class="enlace">quitar</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+      <tfoot><tr><td colspan="3">Total</td><td colspan="2"><strong>{{ c.total|dinero }}</strong></td></tr></tfoot>
+    </table>
+    <form action="{{ url_for('comprar') }}" method="post">
+      <button class="boton">Comprar</button>
+    </form>
+  {% else %}
+    <p>Tu carrito está vacío (o ya expiró ⏳).</p>
+    <a class="boton" href="{{ url_for('inicio') }}">Ir al catálogo</a>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block titulo %}Admin{% endblock %}
+{% block contenido %}
+<section class="bloque">
+  <h1>Panel de administración</h1>
+  <p class="muted">Libros vendidos hoy: <strong>{{ vendidos_hoy }}</strong></p>
+
+  <div class="admin-grid">
+    {# Formulario: crear (si libro es None) o editar #}
+    <form class="tarjeta-form" method="post"
+          action="{{ url_for('admin_editar', id_libro=libro.id) if libro else url_for('admin_crear') }}">
+      <h2>{{ "Editar " ~ libro.id if libro else "Nuevo libro" }}</h2>
+      <label>Título <input name="titulo" value="{{ libro.titulo if libro }}" {{ 'required' if not libro }}></label>
+      <label>Autor <input name="autor" value="{{ libro.autor if libro }}" {{ 'required' if not libro }}></label>
+      <div class="fila">
+        <label>Año <input name="anio" type="number" value="{{ libro.anio if libro }}" {{ 'required' if not libro }}></label>
+        <label>Precio <input name="precio" type="number" step="0.01" value="{{ libro.precio if libro }}" {{ 'required' if not libro }}></label>
+        <label>Stock <input name="stock" type="number" value="{{ libro.stock if libro }}" {{ 'required' if not libro }}></label>
+      </div>
+      <label>Géneros (separados por coma)
+        <input name="generos" value="{{ libro.generos|join(', ') if libro }}" placeholder="fantasia, romance" {{ 'required' if not libro }}>
+      </label>
+      <label>Sinopsis <textarea name="sinopsis" rows="2">{{ libro.sinopsis if libro }}</textarea></label>
+      <label>URL de portada (opcional) <input name="portada" value="{{ libro.portada if libro }}" placeholder="https://..."></label>
+      <button class="boton">{{ "Guardar cambios" if libro else "Crear libro" }}</button>
+      {% if libro %}<a class="enlace" href="{{ url_for('admin') }}">cancelar</a>{% endif %}
+    </form>
+
+    <form class="tarjeta-form" method="post" action="{{ url_for('admin_oferta') }}">
+      <h2>⚡ Oferta relámpago</h2>
+      <label>Libro
+        <select name="id_libro">
+          {% for l in catalogo %}<option value="{{ l.id }}">{{ l.id }} · {{ l.titulo }}</option>{% endfor %}
+        </select>
+      </label>
+      <div class="fila">
+        <label>Precio oferta <input name="precio" type="number" step="0.01" required></label>
+        <label>Dura (min) <input name="minutos" type="number" value="60" min="1" required></label>
+      </div>
+      <button class="boton">Crear oferta con TTL</button>
+      {% if ofertas %}
+        <ul class="lista-ofertas">
+          {% for o in ofertas %}<li>{{ o.titulo }}: {{ o.oferta|dinero }} · expira en {{ o.oferta_expira }}</li>{% endfor %}
+        </ul>
+      {% endif %}
+    </form>
+  </div>
+
+  <table class="tabla">
+    <thead><tr><th>Id</th><th>Título</th><th>Autor</th><th>Precio</th><th>Stock</th><th></th></tr></thead>
+    <tbody>
+    {% for l in catalogo %}
+      <tr>
+        <td>{{ l.id }}</td><td>{{ l.titulo }}</td><td>{{ l.autor }}</td>
+        <td>{{ l.precio|dinero }}</td><td>{{ l.stock }}</td>
+        <td class="acciones-tabla">
+          <a class="enlace" href="{{ url_for('admin_editar', id_libro=l.id) }}">editar</a>
+          <form action="{{ url_for('admin_eliminar', id_libro=l.id) }}" method="post">
+            <button class="enlace peligro">eliminar</button>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

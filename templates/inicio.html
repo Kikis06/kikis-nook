@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% from "_macros.html" import tarjeta %}
+{% block contenido %}
+
+<section class="portada-sitio">
+  <div class="bienvenida">
+    <p class="sobre">café · libros · rincones</p>
+    <h1>Un rincón para perderse <em>entre páginas</em>.</h1>
+    <p>Pide un latte, pasa el cursor sobre un libro y ábrelo.</p>
+  </div>
+
+  {% if sorpresa %}
+  <div class="sorpresa">
+    <p class="sobre">✦ Libro sorpresa del día</p>
+    <div class="sorpresa-cuerpo">
+      {{ tarjeta(sorpresa) }}
+      <div>
+        <h2>{{ sorpresa.titulo }}</h2>
+        <p class="autor">{{ sorpresa.autor }}</p>
+        <p>{{ sorpresa.sinopsis }}</p>
+        <p class="ttl">Cambia en {{ sorpresa.sorpresa_expira }}</p>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</section>
+
+{% if ofertas %}
+<section class="bloque">
+  <h2 class="titulo-bloque">⚡ Ofertas relámpago</h2>
+  <div class="estante">
+    {% for o in ofertas %}{{ tarjeta(o, "termina en " ~ o.oferta_expira) }}{% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<section class="bloque">
+  <h2 class="titulo-bloque">Los más vendidos</h2>
+  <div class="estante">
+    {% for libro, ventas in top %}{{ tarjeta(libro, "#" ~ loop.index ~ " · " ~ ventas ~ " vendidos") }}{% endfor %}
+  </div>
+</section>
+
+<section class="bloque">
+  <h2 class="titulo-bloque">Nuestro catálogo</h2>
+  <div class="chips">
+    <a class="chip {{ 'activo' if not genero_actual }}" href="{{ url_for('inicio') }}">todos</a>
+    {% for g in generos %}
+      <a class="chip {{ 'activo' if g == genero_actual }}" href="{{ url_for('inicio', genero=g) }}">{{ g.replace('-', ' ') }}</a>
+    {% endfor %}
+  </div>
+  <div class="estante">
+    {% for libro in catalogo %}{{ tarjeta(libro) }}{% else %}<p>No hay libros en este género todavía.</p>{% endfor %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block titulo %}Kiki's Nook{% endblock %} · café librería</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+</head>
+<body>
+  <header class="barra">
+    <a class="logo" href="{{ url_for('inicio') }}">
+      <span class="logo-taza">☕</span>
+      <span>Kiki's <em>Nook</em></span>
+    </a>
+    <nav>
+      <a href="{{ url_for('inicio') }}">Catálogo</a>
+      <a href="{{ url_for('mi_rincon') }}">Mi rincón</a>
+      <a href="{{ url_for('admin') }}">Admin</a>
+      <a class="nav-carrito" href="{{ url_for('ver_carrito') }}">
+        Carrito <span class="burbuja">{{ piezas_carrito }}</span>
+      </a>
+    </nav>
+    <form class="quien" action="{{ url_for('entrar') }}" method="post">
+      <label for="nombre">Hola,</label>
+      <input id="nombre" name="nombre" value="{{ usuario }}" size="8" aria-label="Tu nombre">
+      <button type="submit" title="Cambiar de usuario">↵</button>
+    </form>
+  </header>
+
+  {% with mensajes = get_flashed_messages(with_categories=true) %}
+    {% if mensajes %}
+      <div class="avisos">
+        {% for tipo, texto in mensajes %}<p class="aviso aviso-{{ tipo }}">{{ texto }}</p>{% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <main>{% block contenido %}{% endblock %}</main>
+
+  <footer class="pie">
+    <p>Kiki's Nook · libros, café y rincones tranquilos</p>
+    <p class="nube"><span class="punto"></span> Conectado a Redis en la nube (Upstash) · {{ latencia_ms }} ms</p>
+  </footer>
+
+  <script>
+    // Cuenta regresiva en vivo para cualquier elemento con data-segundos (TTL)
+    document.querySelectorAll("[data-segundos]").forEach(el => {
+      let s = parseInt(el.dataset.segundos, 10);
+      const pinta = () => {
+        if (s <= 0) { el.textContent = "expirado"; return; }
+        const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), x = s % 60;
+        el.textContent = (h ? h + " h " : "") + String(m).padStart(2, "0") + " min " + String(x).padStart(2, "0") + " s";
+        s--;
+      };
+      pinta(); setInterval(pinta, 1000);
+    });
+  </script>
+</body>
+</html>
